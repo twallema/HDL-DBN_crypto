@@ -72,4 +72,4 @@ for id in ids:
 data = pd.concat(data_collect, axis=0)
 
 os.makedirs(os.path.join(abs_dir, '../raw/prices'), exist_ok=True)
-data.to_parquet(os.path.join(abs_dir, f'../raw/prices/prices_retrieved_{datetime.today().strftime('%Y-%m-%d')}.parquet.gz'), index=False, compression='gzip')
+data.to_parquet(os.path.join(abs_dir, f'../raw/prices/historical-prices_retrieved_{datetime.today().strftime('%Y-%m-%d')}.parquet.gz'), index=False, compression='gzip')
