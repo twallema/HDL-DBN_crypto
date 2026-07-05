@@ -1,0 +1,14 @@
+name: HDL-DBN_CRYPTO
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - numpy
+  - pandas  
+  - xarray
+  - matplotlib  
+  - pymc>6.0
+  - arviz>1.0
+  - jupyter
+  - ipykernel
+  - python-dotenv
