@@ -13,11 +13,11 @@ from datetime import datetime
 
 abs_dir = os.path.dirname(__file__)
 
-load_dotenv(dotenv_path=os.path.join(abs_dir, '../../CMC_API_KEY'))
+load_dotenv(dotenv_path=os.path.join(abs_dir, '../../CMC_API_KEY.env'))
 
 url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=active&sort=cmc_rank"
 
-headers = {"x-cmc_pro_api_key": os.getenv("API_KEY")}
+headers = {"X-CMC_PRO_API_KEY": os.getenv("API_KEY")}
 
 response = requests.get(url, headers=headers)
 
@@ -33,6 +33,6 @@ platforms = [crypto["platform"]["name"] if crypto["platform"] else None for cryp
 
 crypto_map = pd.DataFrame(data=np.transpose(np.stack([ranks, ids, symbols, names, platforms])), columns=["rank_market_cap", "id", "symbol", "name", "platform"])
 
-os.makedirs(os.path.join(abs_dir, '../raw'), exist_ok=True)
-crypto_map.to_csv(os.path.join(abs_dir, f'../raw/crypto_map_{datetime.today().strftime('%Y-%m-%d')}.csv'), index=False)
+os.makedirs(os.path.join(abs_dir, '../raw/CMC_mappings'), exist_ok=True)
+crypto_map.to_csv(os.path.join(abs_dir, f'../raw/CMC_mappings/CMC-mapping_retrieved_{datetime.today().strftime('%Y-%m-%d')}.csv'), index=False)
 
