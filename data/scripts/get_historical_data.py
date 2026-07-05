@@ -13,6 +13,11 @@ from datetime import datetime, timedelta
 
 abs_dir = os.path.dirname(__file__)
 
+# settings
+count = 1096
+interval = '24h'
+time_end = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+
 ################################# 
 ## retrieve the latest mapping ##
 #################################
@@ -32,13 +37,13 @@ else:
 
 load_dotenv(dotenv_path=os.path.join(abs_dir, '../../CMC_API_KEY.env'))
 
-ids = [1,1027] # mapping['id'].unique()
-time_end = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+ids = mapping['id'].unique()[:250]
 headers = {"X-CMC_PRO_API_KEY": os.getenv("API_KEY")}
 data_collect = []
+
 for id in ids:
 
-    url = f"https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/historical?id={id}&time_end={time_end}T23%3A59%3A00.000Z&count=10&interval=24h"
+    url = f"https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/historical?id={id}&time_end={time_end}T23%3A59%3A00.000Z&count={count}&interval={interval}"
 
     response = requests.get(url, headers=headers)
 
@@ -58,12 +63,13 @@ for id in ids:
                         columns=["price_usd", "volume_24h", "market_cap", "total_supply", "circulating_supply"]).reset_index()
 
     data['name'] = mapping[mapping['id'] == id]['name'].values[0]
+    data['ticker'] = mapping[mapping['id'] == id]['symbol'].values[0]
 
-    data = data[['time', 'name', 'price_usd', 'volume_24h', 'market_cap', 'total_supply', 'circulating_supply']]
+    data = data[['time', 'ticker', 'name', 'price_usd', 'volume_24h', 'market_cap', 'total_supply', 'circulating_supply']]
 
     data_collect.append(data)
 
 data = pd.concat(data_collect, axis=0)
 
 os.makedirs(os.path.join(abs_dir, '../raw/prices'), exist_ok=True)
-data.to_csv(os.path.join(abs_dir, f'../raw/prices/prices_retrieved_{datetime.today().strftime('%Y-%m-%d')}.csv'), index=False)
+data.to_parquet(os.path.join(abs_dir, f'../raw/prices/prices_retrieved_{datetime.today().strftime('%Y-%m-%d')}.parquet.gz'), index=False, compression='gzip')
