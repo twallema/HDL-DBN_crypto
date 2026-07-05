@@ -1,0 +1,58 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\geometry{margin=1in}
+
+\newcommand{\given}{\,|\,}
+\newcommand{\Normal}{\mathcal{N}}
+\newcommand{\Lognormal}{\text{Lognormal}}
+\newcommand{\HalfNormal}{\text{HalfNormal}}
+\newcommand{\Exponential}{\text{Exponential}}
+\newcommand{\HalfCauchy}{\text{HalfCauchy}}
+\newcommand{\Poisson}{\text{Poisson}}
+\newcommand{\NegBin}{\text{NegBin}}
+
+\setlength\parindent{0pt}
+
+\graphicspath{{fig/}}
+
+
+\title{}
+\author{Tijs~W.~Alleman, Ph.D.}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+For every coin $i$, we model the natural logarithm of its returns, defined as,
+\begin{equation}
+r_i(t) = \ln P_i(t) - \ln P_i(t-1),
+\end{equation}
+as,
+\begin{equation}
+r_i(t) = \alpha_i + A_i(r_i) + \sum_{j \in \mathcal{P}(i)} T_{j \rightarrow i} (r_j) + C_i(t) + \epsilon_i(t),
+\end{equation}
+where $A_i(\cdot)$ is the coin's own autoregressive component modeled as an AR(p) process, $T_{j \rightarrow i} (r_j)$ is the transfer function from parent coin $j$, which is modeled as a distributed lag model using B-splines, 
+\begin{equation}
+T_{j \rightarrow i} (r_j) = \sum_{\ell = 1}^{L} \beta_{j \rightarrow i}(\ell) r_j(t-\ell),
+\end{equation}
+with,
+\begin{equation}
+\beta_{j \rightarrow i}(\ell) = \sum_{k=1}^K \theta_{j \rightarrow i, k} B_k(\ell).
+\end{equation}
+$C_i(t)$ are day-of-week and month calendar effects, and $\epsilon_i(t) \sim(0, \sigma_i^2)$ are the autoregressive shocks. The baseline model assumes linear distributed lag transfer functions. Natural extensions include nonlinear transfer functions (e.g., threshold or spline interactions), time-varying transfer functions, and GARCH(1,1) to capture autogressive volatility clustering.\\
+
+The transfer functions describe information propagation through a hierarchical cryptocurrency market, which is implemented as a rooted directed acyclic graph (DAG). Bitcoin forms the root of the graph, and directed edges represent hypothesized pathways through which price information propagates between assets. Each edge is associated with its own distributed lag transfer function, allowing the timing and magnitude of information propagation to differ across relationships.\\
+
+Independently of the graph topology, each asset is assigned one or more metadata groups (e.g., blockchain ecosystem, protocol type, or market-cap class). These groups are used to define hierarchical priors on the transfer function coefficients, allowing statistically similar relationships to share information while retaining edge-specific dynamics.\\
+
+The graph specifies the topology of information propagation, whereas the Bayesian hierarchy specifies the statistical regularization of the transfer functions.
+
+\end{document}
