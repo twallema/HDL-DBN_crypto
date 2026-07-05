@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# additions
+.DS_Store
+CMC_API_KEY.env
+data/raw/
