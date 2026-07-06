@@ -14,8 +14,9 @@ from datetime import datetime, timedelta
 abs_dir = os.path.dirname(__file__)
 
 # settings
-count = 1096
-interval = '24h'
+MC_top = 250
+count = 8640
+interval = '5m'
 time_end = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
 
 ################################# 
@@ -37,11 +38,13 @@ else:
 
 load_dotenv(dotenv_path=os.path.join(abs_dir, '../../CMC_API_KEY.env'))
 
-ids = mapping['id'].unique()[:250]  # limited to 250 biggest coins
+ids = mapping['id'].unique()[:MC_top]  # limited to 250 biggest coins
 headers = {"X-CMC_PRO_API_KEY": os.getenv("API_KEY")}
 data_collect = []
 
 for id in ids:
+
+    print(id)
 
     url = f"https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/historical?id={id}&time_end={time_end}T23%3A59%3A00.000Z&count={count}&interval={interval}"
 
@@ -72,4 +75,4 @@ for id in ids:
 data = pd.concat(data_collect, axis=0)
 
 os.makedirs(os.path.join(abs_dir, '../raw/prices'), exist_ok=True)
-data.to_parquet(os.path.join(abs_dir, f'../raw/prices/historical-prices_interval-{interval}_retrieved_{datetime.today().strftime('%Y-%m-%d')}.parquet.gz'), index=False, compression='gzip')
+data.to_parquet(os.path.join(abs_dir, f'../raw/prices/historical-prices_interval-{interval}_MC-top{MC_top}_ends-{time_end}.parquet.gz'), index=False, compression='gzip')
