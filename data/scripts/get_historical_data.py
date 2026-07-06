@@ -37,7 +37,7 @@ else:
 
 load_dotenv(dotenv_path=os.path.join(abs_dir, '../../CMC_API_KEY.env'))
 
-ids = mapping['id'].unique()[:250]
+ids = mapping['id'].unique()[:250]  # limited to 250 biggest coins
 headers = {"X-CMC_PRO_API_KEY": os.getenv("API_KEY")}
 data_collect = []
 
@@ -50,9 +50,9 @@ for id in ids:
     parsed_dict = json.loads(response.text)
 
     data = parsed_dict["data"][str(id)]['quotes']
-
+    
     timestamps = [datetime.fromisoformat(data[i]['timestamp']) for i in range(len(data))]
-    prices = [np.round(data[i]['quote']['USD']['price'], 2) for i in range(len(data))]
+    prices = [data[i]['quote']['USD']['price'] for i in range(len(data))]
     volumes = [data[i]['quote']['USD']['volume_24h'] for i in range(len(data))]
     market_caps = [data[i]['quote']['USD']['market_cap'] for i in range(len(data))]
     total_supplies = [data[i]['quote']['USD']['total_supply'] for i in range(len(data))]
@@ -72,4 +72,4 @@ for id in ids:
 data = pd.concat(data_collect, axis=0)
 
 os.makedirs(os.path.join(abs_dir, '../raw/prices'), exist_ok=True)
-data.to_parquet(os.path.join(abs_dir, f'../raw/prices/historical-prices_retrieved_{datetime.today().strftime('%Y-%m-%d')}.parquet.gz'), index=False, compression='gzip')
+data.to_parquet(os.path.join(abs_dir, f'../raw/prices/historical-prices_interval-{interval}_retrieved_{datetime.today().strftime('%Y-%m-%d')}.parquet.gz'), index=False, compression='gzip')
